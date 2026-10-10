@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     [Header("Параметры движения и прыжка")]
     [SerializeField] private float moveSpeed = 5f;
 
-    [SerializeField] private float jumpHeight = 1.5f;
+    [SerializeField] private float jumpHeight = 70.0f;
     
 
     [Header("Проверка земли")]
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
-
+    private float g = -Physics.gravity.magnitude;
 
     private void Awake()
     {
@@ -38,12 +38,7 @@ public class PlayerController : MonoBehaviour
     {
         // на земле ли мы
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
+        
         // ввод
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -59,11 +54,11 @@ public class PlayerController : MonoBehaviour
         // прыг
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * -Physics.gravity.magnitude);
+            velocity.y = Mathf.Sqrt(jumpHeight);
         }
 
         // гравитация
-        velocity.y += -Physics.gravity.magnitude * Time.deltaTime;
+        velocity.y += g * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
