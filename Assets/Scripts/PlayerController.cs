@@ -7,11 +7,13 @@ public class PlayerController : MonoBehaviour
     private InputAction _move;
     private InputAction _rotate;
     private InputAction _jump;
+    private InputAction _cast;
 
     private float rotationSpeed = 100f;
     private PlayerCameraController _camera;
     private PlayerMovement _movement;
     private PlayerAnimationController _animation;
+    private Staff _staff;
 
 
     private void OnEnable()
@@ -24,17 +26,19 @@ public class PlayerController : MonoBehaviour
     }
     private void Awake()
     {
+        //ссылки на действия
         _move = _asset.FindAction("Move");
         _rotate = _asset.FindAction("Look");
         _jump = _asset.FindAction("Jump");
+        _cast = _asset.FindAction("Attack");
+
+        //ссылки на состовляющие игрока
         _camera = GetComponentInChildren<PlayerCameraController>();
         _movement = GetComponentInChildren<PlayerMovement>();
         _animation = GetComponent<PlayerAnimationController>();
+        _staff = GetComponentInChildren<Staff>();
     }
-    private void Start()
-    {
-        //_animation.StartAnimation();
-    }
+    
     private void Update()
     {
    
@@ -51,6 +55,9 @@ public class PlayerController : MonoBehaviour
         {
             _movement.Jump();
         }
+        if (_cast.IsPressed())
+        {
+            _staff.Cast();
+        }
     }
-
 }
