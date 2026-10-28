@@ -1,16 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IWeapon
 {
-    public void Cast()
-    {
-        CastVisuals(new Vector3());
-    }
+    IReadOnlyList<ISpell> AvailableSpells { get; }
+    ISpell CurrentSpell { get; }
+    void Cast();
+    
 
-    public Vector3 CastLogic(Vector3 targetPos);
-
-    public void CastVisuals(Vector3 targetPos)
-    {
-
-    }
+    void SwitchSpell();
 }
