@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private float rotationSpeed = 100f;
     private PlayerCameraController _camera;
     private PlayerMovement _movement;
+    private PlayerAnimationController _animation;
 
 
     private void OnEnable()
@@ -28,6 +29,11 @@ public class PlayerController : MonoBehaviour
         _jump = _asset.FindAction("Jump");
         _camera = GetComponentInChildren<PlayerCameraController>();
         _movement = GetComponentInChildren<PlayerMovement>();
+        _animation = GetComponent<PlayerAnimationController>();
+    }
+    private void Start()
+    {
+        //_animation.StartAnimation();
     }
     private void Update()
     {
@@ -39,7 +45,8 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        _movement.PlayerMove(_move.ReadValue<Vector2>());
+        float speedToAnimator = _movement.PlayerMove(_move.ReadValue<Vector2>());
+        _animation.SetSpeedInAnimator(speedToAnimator);
         if (_jump.IsPressed())
         {
             _movement.Jump();

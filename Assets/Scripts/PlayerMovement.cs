@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     {
         transform.Rotate(new Vector3(0,value) * k * Time.deltaTime);
     }
-    public void PlayerMove(Vector2 dir)
+    public float PlayerMove(Vector2 dir)
     {
         Vector3 moveDir = transform.right * dir.x + transform.forward * dir.y;
         Vector3 horizontalMove = moveDir * _movementSpeed * Time.deltaTime;
@@ -28,6 +28,17 @@ public class PlayerMovement : MonoBehaviour
         
         
         _controller.Move(horizontalMove + verticalMove);
+
+        // делаем отдельный вектор, так как для анимации нужна относительно максимальной скорости скорость горизонтальная, но HorizontalMove
+        // не подойдёт так как там уже помножено на deltaTime, а просто velocity мы не можем взять из за скорости вертикальной
+        Vector3 horizontalVelocity = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
+        if (horizontalVelocity.magnitude > 0.01f && _controller.isGrounded)
+        {
+            return horizontalVelocity.magnitude / _movementSpeed;
+        }
+
+        return 0f;
+
     }
     
     private Vector3 Gravity()
