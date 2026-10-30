@@ -15,12 +15,12 @@ public class Staff : MonoBehaviour, IWeapon
     private WaitForSeconds _waitForReloading;
     [SerializeField] private float _waitTimeReloading = 0.7f;
 
-    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Camera _camera;
 
     [Header("Local")]
     [SerializeField] private float _maxDist = 20f;
     [SerializeField] private float _damage = 1f;
-    [SerializeField] private int ammo = 12;
+    [SerializeField] private int _ammo = 12;
     private LineRenderer _lineRenderer;
     private bool _canFire;
     //public List<IDamageable> TargetsHit = new List<IDamageable>();
@@ -28,7 +28,7 @@ public class Staff : MonoBehaviour, IWeapon
     private void Awake()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-
+        if (_camera == null) { _camera = Camera.main; }
     }
     private void Start()
     {
@@ -44,8 +44,9 @@ public class Staff : MonoBehaviour, IWeapon
     {
         if (gameObject.activeSelf == true && _canFire)
         {
-            ammo -= 1;
-            Vector3 targetPos = FireLogic(transform.position + transform.up * _maxDist);
+            _ammo -= 1;
+            
+            Vector3 targetPos = FireLogic();
             FireVisuals(targetPos);
 
             _coroutineFiring = StartCoroutine(FiringCor());
@@ -54,15 +55,15 @@ public class Staff : MonoBehaviour, IWeapon
 
     }
 
-    public Vector3 FireLogic(Vector3 targetPos)
+    public Vector3 FireLogic()
     {
-        
+        Ray ray = _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         RaycastHit hitinfo;
-        var direction = targetPos - transform.position;
+        
 
-        Debug.DrawRay(transform.position, direction, Color.red, 1f);
+        Debug.DrawRay(ray.origin, ray.direction * _maxDist, Color.red, 1f);
 
-        if (Physics.Raycast(transform.position, direction, out hitinfo, _maxDist))
+        if (Physics.Raycast(ray, out hitinfo, _maxDist))
         {
             var targetHit = hitinfo.transform;
             if (targetHit != null)
@@ -76,7 +77,7 @@ public class Staff : MonoBehaviour, IWeapon
             }
 
         }
-        return targetPos;
+        return ray.origin + ray.direction * _maxDist;
 
     }
 
@@ -84,18 +85,15 @@ public class Staff : MonoBehaviour, IWeapon
 
     public void FireVisuals(Vector3 targetPos)
     {
-        Vector3 muzzlePoint = transform.up * 2;
-        if (_canFire)
-        {
-            
-            _lineRenderer.enabled = true;
-            _lineRenderer.SetPosition(0, transform.position + muzzlePoint);
-            //_lineRenderer.SetPosition(1, transform.position + transform.forward * _maxDist);
-            _lineRenderer.SetPosition(1, targetPos);
-            _canFire = false;
 
+        Vector3 muzzlePoint = transform.position + transform.up;
+        _lineRenderer.enabled = true;
 
-        }
+        _lineRenderer.SetPosition(0, muzzlePoint);
+        _lineRenderer.SetPosition(1, targetPos);
+
+        _canFire = false;
+
     }
 
     private IEnumerator FiringCor()
