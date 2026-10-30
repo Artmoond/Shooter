@@ -6464,6 +6464,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   _health: 5
+  _hitClip: {fileID: 7400000, guid: 1f3286f06b27c3f4d853ff0f82f964ce, type: 2}
+  _stunDuration: 2
 --- !u!114 &5614098701426064440
 MonoBehaviour:
   m_ObjectHideFlags: 0
