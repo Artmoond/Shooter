@@ -16,7 +16,9 @@ public class Staff : MonoBehaviour, IWeapon
     [SerializeField] private float _waitTimeReloading = 0.7f;
 
     [SerializeField] private Camera _camera;
-
+    [SerializeField] private AudioSource _audio;
+    [SerializeField] private AudioClip _shot;
+ 
     [Header("Local")]
     [SerializeField] private float _maxDist = 20f;
     [SerializeField] private float _damage = 1f;
@@ -29,6 +31,7 @@ public class Staff : MonoBehaviour, IWeapon
     {
         _lineRenderer = GetComponent<LineRenderer>();
         if (_camera == null) { _camera = Camera.main; }
+        _audio = GetComponentInParent<AudioSource>();
     }
     private void Start()
     {
@@ -48,6 +51,9 @@ public class Staff : MonoBehaviour, IWeapon
             
             Vector3 targetPos = FireLogic();
             FireVisuals(targetPos);
+            // TODO переделать под события
+            _audio.PlayOneShot(_shot);
+            _audio.pitch = Random.Range(0.9f, 1.2f);
 
             _coroutineFiring = StartCoroutine(FiringCor());
             _coroutineReloading = StartCoroutine(ReloadingCor());

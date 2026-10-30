@@ -11,7 +11,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     public float Health => _health;
     private Animator _animator;
     [SerializeField] private AnimationClip _hitClip;
-    
+    [SerializeField] private AudioSource _audio;
+    [SerializeField] private AudioClip _hit;
+
     private NavMeshAgent _agent;
     private Coroutine _stunCoroutine;
     [SerializeField] private float _stunDuration = 0.3f;
@@ -20,13 +22,14 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     {
         _animator = GetComponent<Animator>();
         _agent = GetComponent<NavMeshAgent>();
+        _audio = GetComponent<AudioSource>();
     }
 
     public void ReceiveDamage(float damageAmount, Vector3 hitPosition)
     {
         
         _health -= damageAmount;
-
+        _audio.PlayOneShot(_hit);
         
         
             
