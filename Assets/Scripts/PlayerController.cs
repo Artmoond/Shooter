@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
         }
         if (_cast.IsPressed())
         {
-            _staff.Cast();
+            _staff.Fire();
         }
     }
 }

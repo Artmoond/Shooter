@@ -2,11 +2,9 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    public interface IDamageable
-    {
-        float Health { get; }
-        void ReceiveDamage(float damageAmount, Vector3 hitPosition);
+    float Health { get; }
+    void ReceiveDamage(float damageAmount, Vector3 hitPosition);
 
-        void ReceiveHeal(float damageAmount, Vector3 hitPosition);
-    }
+    void ReceiveHeal(float damageAmount, Vector3 hitPosition);
 }
+
