@@ -1,45 +1,69 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyAI : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private Transform _playerTransform;
+    private EnemyCombat _combat;
 
-    [Header("Настройки")]
-    [SerializeField] private float _pathUpdateInterval = 0.2f; // Интервал пересчета пути (для оптимизации)
-    private float _timer;
+    [Header("Переменные пути")]
+    [SerializeField] private float _pathUpdateInterval = 0.2f;
+    [Header("Переменные боя")]
+    [SerializeField] private float _attackRange = 2.0f;
+    
+
+    private float _lastAttackTime;
+    private Coroutine _coroutinePathUpdate;
+    
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _combat = GetComponent<EnemyCombat>();
     }
 
     private void Start()
     {
-        // Ищем игрока по тегу "Player"
+        
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             _playerTransform = player.transform;
+            _coroutinePathUpdate = StartCoroutine(pathUpdateCoroutine());
         }
         else
         {
-            Debug.LogError("Игрок с тегом 'Player' не найден на сцене! Убедитесь, что повесили тег на объект игрока.");
+            Debug.LogError("Нет объекта с тегом Player");
         }
     }
 
-    private void Update()
-    {
-        if (_playerTransform == null) return;
 
-        // Пересчитываем путь к игроку по таймеру, чтобы не грузить процессор каждый кадр
-        _timer += Time.deltaTime;
-        if (_timer >= _pathUpdateInterval)
+    private IEnumerator pathUpdateCoroutine()
+    {
+        WaitForSeconds waitInterval = new WaitForSeconds(_pathUpdateInterval);
+        while (true)
         {
-            _agent.SetDestination(_playerTransform.position);
-            _timer = 0f;
+            if (_playerTransform != null)
+            {
+                float distanceToPlayer = Vector3.Distance(transform.position, _playerTransform.position);
+
+                if (distanceToPlayer > _attackRange)
+                {
+                    _agent.isStopped = false;
+                    _agent.SetDestination(_playerTransform.position);
+                }
+                else
+                {
+                    _agent.isStopped = true;
+                    _agent.velocity = Vector3.zero;
+                    
+                    _combat.Attack(_playerTransform);
+                }
+            }
+            yield return waitInterval;
         }
     }
 }
