@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEditor.Animations;
@@ -7,12 +8,15 @@ using UnityEngine.AI;
 
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private float _health;
+    public event Action<GameObject> Death;
+    [SerializeField] public float _health;
+    public float maxHP = 5;
     public float Health => _health;
     private Animator _animator;
     [SerializeField] private AnimationClip _hitClip;
     [SerializeField] private AudioSource _audio;
     [SerializeField] private AudioClip _hit;
+
 
     private NavMeshAgent _agent;
     private Coroutine _stunCoroutine;
@@ -43,7 +47,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         
         if (_health <= 0)
         {
-            Destroy(gameObject);
+            Death?.Invoke(gameObject);
         }
 
 

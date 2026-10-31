@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private float _health = 5;
-    public float Health => _health;
+    public event Action<float, float> OnHealthChanged;
+    [SerializeField] private float _currentHealth = 5;
+    [SerializeField] private float _maxHealth = 5;
+    public float Health => _currentHealth;
 
     private void Start()
     {
@@ -12,10 +15,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void ReceiveDamage(float damageAmount, Vector3 hitPosition)
     {
-        Debug.Log($"ReceiveDamage.Current_HP: {_health}");
-        _health -= damageAmount;
-        Debug.Log($"ReceiveDamage.After taking Damage: {_health}");
-        if (_health <= 0)
+        
+        _currentHealth -= damageAmount;
+
+        OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+        
+        if (_currentHealth <= 0)
         {
             Destroy(gameObject);
         }
@@ -25,4 +30,5 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         throw new System.NotImplementedException();
     }
+
 }
